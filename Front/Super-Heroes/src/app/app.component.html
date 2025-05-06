@@ -1,0 +1,63 @@
+<h1>Gerenciamento de Heróis</h1>
+
+<!-- Buscar Herói -->
+<h3>Buscar Herói</h3>
+<div>
+  <input type="number" [(ngModel)]="valorBuscaHeroi" placeholder="Digite o ID do herói"
+    (keyup.enter)="obterHeroiPorId()">
+  <button (click)="obterHeroiPorId()">Buscar</button>
+</div>
+<p *ngIf="heroiEncontrado$ | async as heroi">
+  <strong>Herói encontrado:</strong> {{ heroi.nomeHeroi }} ({{ heroi.nome }})
+</p>
+<p *ngIf="!(heroiEncontrado$ | async)">Nenhum herói encontrado.</p>
+<hr>
+
+<!-- Listar Heróis -->
+<h3>Lista de Heróis</h3>
+<div *ngIf="heroes$ | async as heroes; else carregando">
+  <table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Nome do Herói</th>
+        <th>Superpoderes</th>
+        <th>Data de Nascimento</th>
+        <th>Altura</th>
+        <th>Peso</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hero of heroes">
+        <td>{{ hero.id }}</td>
+        <td>{{ hero.nome }}</td>
+        <td>{{ hero.nomeHeroi }}</td>
+        <td>{{ hero.superpoderes }}</td>
+        <td>{{ hero.dataNascimento }}</td>
+        <td>{{ hero.altura }}</td>
+        <td>{{ hero.peso }}</td>
+        <td><button (click)="editarHeroi(hero.id)">Editar</button></td>
+        <td><button (click)="excluirHeroi(hero.id)">Excluir</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<ng-template #carregando>
+  <p>Carregando heróis...</p>
+</ng-template>
+<hr>
+
+<!-- Adicionar Novo Herói -->
+<h3>Adicionar Novo Herói</h3>
+<div>
+  <input type="text" [(ngModel)]="nomeAdicionar" placeholder="Nome do herói">
+  <input type="text" [(ngModel)]="nomeHeroiAdicionar" placeholder="Nome do personagem">
+  <input type="text" [(ngModel)]="superpoderesAdicionar" placeholder="Superpoderes">
+  <input type="date" [(ngModel)]="nascimentoAdicionar" placeholder="Data de nascimento">
+  <input type="text" [(ngModel)]="alturaAdicionar" placeholder="Altura">
+  <input type="text" [(ngModel)]="pesoAdicionar" placeholder="Peso">
+  <button (click)="adicionarHeroi()">Adicionar</button>
+</div>
