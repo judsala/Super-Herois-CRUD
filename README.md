@@ -54,5 +54,10 @@ O **Gerenciador de Super-heróis** é uma aplicação CRUD **Fullstack** desenvo
    ```bash
    npm start
    ```
+4. Acesse a página:
+
+   ```
+   http://localhost:4200
+   ```
 
 ---
