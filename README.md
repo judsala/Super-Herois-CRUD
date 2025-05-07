@@ -56,9 +56,3 @@ O **Gerenciador de Super-heróis** é uma aplicação CRUD **Fullstack** desenvo
    ```
 
 ---
-//localhost:5161/swagger
-```
-
-Os endpoints podem ser testados diretamente do navegador.
-
----
