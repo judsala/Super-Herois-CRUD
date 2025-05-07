@@ -7,12 +7,14 @@ public class Hero
     public string NomeHeroi { get; set; }
     public string Superpoderes { get; set; }
     public string DataNascimento { get; set; }
-    public string Altura { get; set; }
-    public string Peso { get; set; }
+    public float Altura { get; set; }
+    public float Peso { get; set; }
+
+    public ICollection<HeroisSuperpoderes> HeroisSuperpoderes { get; set; }
 
     public Hero() { }
 
-    public Hero(int id, string nome, string nomeHeroi, string superpoderes, string dataNascimento, string altura, string peso)
+    public Hero(int id, string nome, string nomeHeroi, string superpoderes, string dataNascimento, float altura, float peso)
     {
       Id = id;
       Nome = nome;

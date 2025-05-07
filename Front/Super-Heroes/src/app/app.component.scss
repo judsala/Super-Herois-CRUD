@@ -1,0 +1,16 @@
+/* app.component.scss */
+:host {
+  display: block;
+  height: 100vh;
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.container-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}

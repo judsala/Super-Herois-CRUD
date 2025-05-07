@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { Observable } from 'rxjs';
+import { first, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HeroService } from './services/hero.service';
 
@@ -21,7 +21,9 @@ export class AppComponent implements OnInit {
   http = inject(HttpClient);
 
   //listar herois
-  heroes$?: Observable<Hero[]>;
+  heroes: Hero[] = [];
+  heroesFiltrados: Hero[] = [];
+  filtroBusca: string = '';
 
   //buscar herói
   heroiEncontrado$?: Observable<Hero>;
@@ -32,38 +34,36 @@ export class AppComponent implements OnInit {
   nomeHeroiAdicionar = '';
   superpoderesAdicionar = '';
   nascimentoAdicionar = '';
-  alturaAdicionar = '';
-  pesoAdicionar = '';
+  alturaAdicionar = 0;
+  pesoAdicionar = 0;
+
+  //editar heroi
+  heroiSelecionado: Hero = {
+    id: 0,
+    nome: '',
+    nomeHeroi: '',
+    superpoderes: '',
+    dataNascimento: '',
+    altura: 0,
+    peso: 0,
+  };
 
   //listar heróis
   obterHerois() {
-    this.heroes$ = this.heroService.obterHerois();
-    this.heroes$.subscribe({
-      error: (err) => {
-        console.error('Erro ao obter lista de heróis:', err);
-        alert('Não foi possível carregar a lista de heróis.');
-      },
+    this.heroService.obterHerois().subscribe((heroes) => {
+      this.heroes = heroes;
+      this.heroesFiltrados = heroes; // Inicialmente, todos os heróis são exibidos
     });
   }
 
-  //buscar heroi pelo id
-  obterHeroiPorId() {
-    const id = Number(this.valorBuscaHeroi); // Converte o valor para número
-    if (isNaN(id) || id <= 0) {
-      alert('Por favor, insira um ID válido (número positivo).');
-      return;
-    }
+  filtrarHerois() {
+    const filtro = this.filtroBusca.toLowerCase();
 
-    this.heroiEncontrado$ = this.heroService.obterHeroiPorId(id);
-    this.heroiEncontrado$.subscribe({
-      next: (heroi) => {
-        console.log('Herói encontrado:', heroi);
-        alert(`Herói encontrado: ${heroi.nomeHeroi} (${heroi.nome})`);
-      },
-      error: (err) => {
-        console.error('Erro ao buscar herói:', err);
-        alert('Herói não encontrado. Verifique o ID e tente novamente.');
-      },
+    this.heroesFiltrados = this.heroes.filter((hero) => {
+      return (
+        hero.id.toString().includes(filtro) || // Busca por ID
+        hero.nomeHeroi.toLowerCase().includes(filtro) // Busca por Nome do Herói
+      );
     });
   }
 
@@ -71,6 +71,17 @@ export class AppComponent implements OnInit {
   adicionarHeroi() {
     if (!this.nomeAdicionar) {
       alert('O nome do herói é obrigatório!');
+      return;
+    }
+
+    // Verifica duplicidade diretamente no array
+    const nomeDuplicado = this.heroes.some(
+      (hero) =>
+        hero.nomeHeroi.toLowerCase() === this.nomeHeroiAdicionar.toLowerCase()
+    );
+
+    if (nomeDuplicado) {
+      alert('Já existe um herói com este nome. Por favor, escolha outro nome.');
       return;
     }
 
@@ -87,8 +98,8 @@ export class AppComponent implements OnInit {
     this.heroService.adicionarHeroi(novoHeroi).subscribe({
       next: () => {
         alert('Herói adicionado com sucesso!');
-        this.obterHerois();
-        this.limparCampos();
+        this.obterHerois(); // Atualiza a lista de heróis
+        this.limparCampos(); // Limpa os campos do formulário
       },
       error: (err) => {
         console.error('Erro ao adicionar herói:', err);
@@ -102,32 +113,45 @@ export class AppComponent implements OnInit {
     this.nomeHeroiAdicionar = '';
     this.superpoderesAdicionar = '';
     this.nascimentoAdicionar = '';
-    this.alturaAdicionar = '';
-    this.pesoAdicionar = '';
+    this.alturaAdicionar = 0;
+    this.pesoAdicionar = 0;
   }
 
   //editar heroi
-  editarHeroi(id: number) {
-    const heroiAtualizado: Hero = {
-      id,
-      nome: 'Novo Nome',
-      nomeHeroi: 'Novo Nome do Herói',
-      superpoderes: 'Novos Superpoderes',
-      dataNascimento: '2000-01-01',
-      altura: '1,80m',
-      peso: '80kg',
-    };
+  abrirModalEdicao(heroi: Hero) {
+    // Carrega os dados do herói selecionado no modal
+    this.heroiSelecionado = { ...heroi };
+  }
 
-    this.heroService.editarHeroi(id, heroiAtualizado).subscribe({
-      next: () => {
-        alert('Herói atualizado com sucesso!');
-        this.obterHerois(); // Atualiza a lista de heróis
-      },
-      error: (err) => {
-        console.error('Erro ao editar herói:', err);
-        alert('Não foi possível editar o herói.');
-      },
-    });
+  salvarAlteracoesHeroi() {
+    // Verifica duplicidade diretamente no array
+    const nomeDuplicado = this.heroes.some(
+      (hero) =>
+        hero.nomeHeroi.toLowerCase() ===
+          this.heroiSelecionado.nomeHeroi.toLowerCase() &&
+        hero.id !== this.heroiSelecionado.id // Ignora o herói que está sendo editado
+    );
+
+    if (nomeDuplicado) {
+      alert(
+        'Já existe outro herói com este nome. Por favor, escolha outro nome.'
+      );
+      return;
+    }
+
+    // Chama o serviço para salvar as alterações
+    this.heroService
+      .editarHeroi(this.heroiSelecionado.id, this.heroiSelecionado)
+      .subscribe({
+        next: () => {
+          alert('Herói atualizado com sucesso!');
+          this.obterHerois(); // Atualiza a lista de heróis
+        },
+        error: (err) => {
+          console.error('Erro ao salvar alterações:', err);
+          alert('Não foi possível salvar as alterações.');
+        },
+      });
   }
 
   //excluir heroi

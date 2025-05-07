@@ -157,3 +157,4 @@ C:\Users\dripl\OneDrive\Desktop\Desafio Viceri\Super-Herois-CRUD\Back\SuperHeroe
 C:\Users\dripl\OneDrive\Desktop\Desafio Viceri\Super-Herois-CRUD\Back\SuperHeroesAPI\bin\Debug\net8.0\runtimes\win-arm64\native\e_sqlite3.dll
 C:\Users\dripl\OneDrive\Desktop\Desafio Viceri\Super-Herois-CRUD\Back\SuperHeroesAPI\bin\Debug\net8.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\dripl\OneDrive\Desktop\Desafio Viceri\Super-Herois-CRUD\Back\SuperHeroesAPI\bin\Debug\net8.0\runtimes\win-x86\native\e_sqlite3.dll
+C:\Users\dripl\OneDrive\Desktop\Desafio Viceri\Super-Herois-CRUD\Back\SuperHeroesAPI\obj\Debug\net8.0\SuperHeroesAPI.sourcelink.json

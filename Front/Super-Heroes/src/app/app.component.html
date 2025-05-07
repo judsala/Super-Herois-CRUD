@@ -1,63 +1,169 @@
-<h1>Gerenciamento de Heróis</h1>
+<div class="container-wrapper">
+  <div class="container-lg bg-light shadow-lg rounded p-4">
+    <h1>Gerenciamento de Heróis</h1>
 
-<!-- Buscar Herói -->
-<h3>Buscar Herói</h3>
-<div>
-  <input type="number" [(ngModel)]="valorBuscaHeroi" placeholder="Digite o ID do herói"
-    (keyup.enter)="obterHeroiPorId()">
-  <button (click)="obterHeroiPorId()">Buscar</button>
+    <!-- Buscar Herói -->
+    <div class="col-4 my-4">
+      <input type="text" class="form-control" [(ngModel)]="filtroBusca" placeholder="Pesquisa por ID ou Nome do Herói"
+        (input)="filtrarHerois()">
+      <hr>
+
+      <!-- Adicionar Novo Herói -->
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAdicionarHeroi">
+        Adicionar Novo Herói
+      </button>
+    </div>
+
+    <!-- Listar Heróis -->
+    <h3>Lista de Heróis</h3>
+    <div *ngIf="heroesFiltrados.length > 0; else semHerois">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Nome do Herói</th>
+            <th>Superpoderes</th>
+            <th>Data de Nascimento</th>
+            <th>Altura (cm)</th>
+            <th>Peso (Kg)</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hero of heroesFiltrados">
+            <td>{{ hero.id }}</td>
+            <td>{{ hero.nome }}</td>
+            <td>{{ hero.nomeHeroi }}</td>
+            <td>{{ hero.superpoderes }}</td>
+            <td>{{ hero.dataNascimento | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ hero.altura }}</td>
+            <td>{{ hero.peso }}</td>
+            <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEditarHeroi"
+                (click)="abrirModalEdicao(hero)"><svg xmlns="http://www.w3.org/2000/svg" height="19px"
+                  viewBox="0 -960 960 960" width="19px" fill="#ffffff">
+                  <path
+                    d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+                </svg>
+              </button></td>
+            <td><button type="button" class="btn btn-danger" (click)="excluirHeroi(hero.id)"><svg
+                  xmlns="http://www.w3.org/2000/svg" height="19px" viewBox="0 -960 960 960" width="19px" fill="#ffffff">
+                  <path
+                    d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
+                </svg></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Mensagem quando não há heróis -->
+    <ng-template #semHerois>
+      <p>Ainda não há heróis cadastrados.</p>
+    </ng-template>
+
+    <ng-template #carregando>
+      <p>Carregando heróis...</p>
+    </ng-template>
+    <hr>
+  </div>
 </div>
-<p *ngIf="heroiEncontrado$ | async as heroi">
-  <strong>Herói encontrado:</strong> {{ heroi.nomeHeroi }} ({{ heroi.nome }})
-</p>
-<p *ngIf="!(heroiEncontrado$ | async)">Nenhum herói encontrado.</p>
-<hr>
 
-<!-- Listar Heróis -->
-<h3>Lista de Heróis</h3>
-<div *ngIf="heroes$ | async as heroes; else carregando">
-  <table border="1" cellspacing="0" cellpadding="5">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Nome do Herói</th>
-        <th>Superpoderes</th>
-        <th>Data de Nascimento</th>
-        <th>Altura</th>
-        <th>Peso</th>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let hero of heroes">
-        <td>{{ hero.id }}</td>
-        <td>{{ hero.nome }}</td>
-        <td>{{ hero.nomeHeroi }}</td>
-        <td>{{ hero.superpoderes }}</td>
-        <td>{{ hero.dataNascimento }}</td>
-        <td>{{ hero.altura }}</td>
-        <td>{{ hero.peso }}</td>
-        <td><button (click)="editarHeroi(hero.id)">Editar</button></td>
-        <td><button (click)="excluirHeroi(hero.id)">Excluir</button></td>
-      </tr>
-    </tbody>
-  </table>
+<!-- Modal Adicionar Novo Herói -->
+<div class="modal fade" id="modalAdicionarHeroi" tabindex="-1" aria-labelledby="modalAdicionarHeroiLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAdicionarHeroiLabel">Adicionar Novo Herói</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="nomeAdicionar" class="form-label">Nome</label>
+            <input type="text" id="nomeAdicionar" class="form-control" [(ngModel)]="nomeAdicionar" name="nomeAdicionar"
+              placeholder="Nome">
+          </div>
+          <div class="mb-3">
+            <label for="nomeHeroiAdicionar" class="form-label">Nome do Herói</label>
+            <input type="text" id="nomeHeroiAdicionar" class="form-control" [(ngModel)]="nomeHeroiAdicionar"
+              name="nomeHeroiAdicionar" placeholder="Nome do herói">
+          </div>
+          <div class="mb-3">
+            <label for="superpoderesAdicionar" class="form-label">Superpoderes</label>
+            <input type="text" id="superpoderesAdicionar" class="form-control" [(ngModel)]="superpoderesAdicionar"
+              name="superpoderesAdicionar" placeholder="Superpoderes">
+          </div>
+          <div class="mb-3">
+            <label for="nascimentoAdicionar" class="form-label">Data de Nascimento</label>
+            <input type="date" id="nascimentoAdicionar" class="form-control" [(ngModel)]="nascimentoAdicionar"
+              name="nascimentoAdicionar">
+          </div>
+          <div class="mb-3">
+            <label for="alturaAdicionar" class="form-label">Altura (cm)</label>
+            <input type="text" id="alturaAdicionar" class="form-control" [(ngModel)]="alturaAdicionar"
+              name="alturaAdicionar" placeholder="Altura">
+          </div>
+          <div class="mb-3">
+            <label for="pesoAdicionar" class="form-label">Peso (Kg)</label>
+            <input type="text" id="pesoAdicionar" class="form-control" [(ngModel)]="pesoAdicionar" name="pesoAdicionar"
+              placeholder="Peso">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="adicionarHeroi()"
+          data-bs-dismiss="modal">Adicionar</button>
+      </div>
+    </div>
+  </div>
 </div>
-<ng-template #carregando>
-  <p>Carregando heróis...</p>
-</ng-template>
-<hr>
 
-<!-- Adicionar Novo Herói -->
-<h3>Adicionar Novo Herói</h3>
-<div>
-  <input type="text" [(ngModel)]="nomeAdicionar" placeholder="Nome do herói">
-  <input type="text" [(ngModel)]="nomeHeroiAdicionar" placeholder="Nome do personagem">
-  <input type="text" [(ngModel)]="superpoderesAdicionar" placeholder="Superpoderes">
-  <input type="date" [(ngModel)]="nascimentoAdicionar" placeholder="Data de nascimento">
-  <input type="text" [(ngModel)]="alturaAdicionar" placeholder="Altura">
-  <input type="text" [(ngModel)]="pesoAdicionar" placeholder="Peso">
-  <button (click)="adicionarHeroi()">Adicionar</button>
+<!-- Modal Editar herói -->
+<div class="modal fade" id="modalEditarHeroi" tabindex="-1" aria-labelledby="modalEditarHeroiLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalEditarHeroiLabel">Editar Herói</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" id="nome" class="form-control" [(ngModel)]="heroiSelecionado.nome" name="nome">
+          </div>
+          <div class="mb-3">
+            <label for="nomeHeroi" class="form-label">Nome do Herói</label>
+            <input type="text" id="nomeHeroi" class="form-control" [(ngModel)]="heroiSelecionado.nomeHeroi"
+              name="nomeHeroi">
+          </div>
+          <div class="mb-3">
+            <label for="superpoderes" class="form-label">Superpoderes</label>
+            <input type="text" id="superpoderes" class="form-control" [(ngModel)]="heroiSelecionado.superpoderes"
+              name="superpoderes">
+          </div>
+          <div class="mb-3">
+            <label for="dataNascimento" class="form-label">Data de Nascimento</label>
+            <input type="date" id="dataNascimento" class="form-control" [(ngModel)]="heroiSelecionado.dataNascimento"
+              name="dataNascimento">
+          </div>
+          <div class="mb-3">
+            <label for="altura" class="form-label">Altura(cm)</label>
+            <input type="text" id="altura" class="form-control" [(ngModel)]="heroiSelecionado.altura" name="altura">
+          </div>
+          <div class="mb-3">
+            <label for="peso" class="form-label">Peso(Kg)</label>
+            <input type="text" id="peso" class="form-control" [(ngModel)]="heroiSelecionado.peso" name="peso">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="salvarAlteracoesHeroi()" data-bs-dismiss="modal">Salvar
+          Alterações</button>
+      </div>
+    </div>
+  </div>
 </div>
