@@ -9,7 +9,7 @@ O **Gerenciador de Super-heróis** é uma aplicação CRUD **Fullstack** desenvo
 * **Bootstrap 5** e **Sass** - Estilização
 * **Swagger** – Documentação interativa para teste e visualização de endpoints.
 * **Entity Framework Core** – ORM para modelagem e persistência de dados.
-* **SQLite** – Banco de dados leve, ideal para desenvolvimento local.
+* **SQLite** – Banco de dados.
 
 ## ⚙️ Como rodar o projeto
 
