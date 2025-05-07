@@ -1,4 +1,4 @@
-O **Gerenciador de Superheróis** é uma aplicação CRUD **Fullstack** desenvolvida em .Net 8 e Angular 17. Optei por desenvolver uma interface simples mas funcional, apresentando apenas uma página e utilizando modais para a inclusão e a edição dos heróis.
+O **Gerenciador de Super-heróis** é uma aplicação CRUD **Fullstack** desenvolvida em .Net 8 e Angular 17. Optei por desenvolver uma interface simples mas funcional, apresentando apenas uma página e utilizando modais para a inclusão e a edição dos heróis.
 
 ---
 
