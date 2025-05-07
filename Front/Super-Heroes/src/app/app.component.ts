@@ -3,14 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { first, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { HeroService } from './services/hero.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -22,12 +21,11 @@ export class AppComponent implements OnInit {
 
   //listar herois
   heroes: Hero[] = [];
-  heroesFiltrados: Hero[] = [];
-  filtroBusca: string = '';
+  carregando: boolean = true;
 
   //buscar herói
-  heroiEncontrado$?: Observable<Hero>;
-  valorBuscaHeroi = '';
+  heroesFiltrados: Hero[] = [];
+  filtroBusca: string = '';
 
   //adicionar heroi
   nomeAdicionar = '';
@@ -48,33 +46,38 @@ export class AppComponent implements OnInit {
     peso: 0,
   };
 
-  //listar heróis
+  //MÉTODOS
+
+  //lista heróis
   obterHerois() {
+    this.carregando = true;
     this.heroService.obterHerois().subscribe((heroes) => {
       this.heroes = heroes;
-      this.heroesFiltrados = heroes; // Inicialmente, todos os heróis são exibidos
+      this.heroesFiltrados = heroes;
+      this.carregando = false;
     });
   }
 
+  //pesquisa herói por nome ou id
   filtrarHerois() {
     const filtro = this.filtroBusca.toLowerCase();
 
     this.heroesFiltrados = this.heroes.filter((hero) => {
       return (
-        hero.id.toString().includes(filtro) || // Busca por ID
-        hero.nomeHeroi.toLowerCase().includes(filtro) // Busca por Nome do Herói
+        hero.id.toString().includes(filtro) ||
+        hero.nomeHeroi.toLowerCase().includes(filtro)
       );
     });
   }
 
-  //adicionar novo heroi
+  //adiciona novo heroi
   adicionarHeroi() {
     if (!this.nomeAdicionar) {
       alert('O nome do herói é obrigatório!');
       return;
     }
 
-    // Verifica duplicidade diretamente no array
+    // Verifica se há duplicidade de nomes de heróis
     const nomeDuplicado = this.heroes.some(
       (hero) =>
         hero.nomeHeroi.toLowerCase() === this.nomeHeroiAdicionar.toLowerCase()
@@ -117,14 +120,13 @@ export class AppComponent implements OnInit {
     this.pesoAdicionar = 0;
   }
 
-  //editar heroi
+  //edita heroi
   abrirModalEdicao(heroi: Hero) {
-    // Carrega os dados do herói selecionado no modal
     this.heroiSelecionado = { ...heroi };
   }
 
   salvarAlteracoesHeroi() {
-    // Verifica duplicidade diretamente no array
+    // Verifica se já existe herói com o mesmo nome
     const nomeDuplicado = this.heroes.some(
       (hero) =>
         hero.nomeHeroi.toLowerCase() ===
@@ -145,7 +147,7 @@ export class AppComponent implements OnInit {
       .subscribe({
         next: () => {
           alert('Herói atualizado com sucesso!');
-          this.obterHerois(); // Atualiza a lista de heróis
+          this.obterHerois();
         },
         error: (err) => {
           console.error('Erro ao salvar alterações:', err);
@@ -154,7 +156,7 @@ export class AppComponent implements OnInit {
       });
   }
 
-  //excluir heroi
+  //exclui heroi
   excluirHeroi(id: number) {
     if (confirm('Tem certeza que deseja excluir este herói?')) {
       this.heroService.excluirHeroi(id).subscribe({

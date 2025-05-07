@@ -7,14 +7,14 @@ public static class HeroesRoutes
 {
   public static void MapHeroesRoutes(this WebApplication app)
     {
-        //Lista todos os heróis
+        //[GET]Lista todos os heróis
         app.MapGet("/heroes", async (AppDbContext db) => await db.Heroes.ToListAsync());
 
-        //Retorna herói por id
+        //[GET]Retorna herói por id
         app.MapGet("/heroes/{id}", async (AppDbContext db, int id) =>
             await db.Heroes.FindAsync(id) is Hero hero ? Results.Ok(hero) : Results.NotFound());
 
-        //Cria novo herói  
+        //[POST]Cria novo herói  
         app.MapPost("/heroes", async (AppDbContext db, Hero hero) =>
         {
             db.Heroes.Add(hero);
@@ -22,7 +22,7 @@ public static class HeroesRoutes
             return Results.Created($"/heroes/{hero.Id}", hero);
         });
 
-        //Atualiza herói existente
+        //[PUT]Atualiza herói existente
         app.MapPut("/heroes/{id}", async (AppDbContext db, int id, Hero updatedHero) =>
         {
             var hero = await db.Heroes.FindAsync(id);
@@ -39,7 +39,7 @@ public static class HeroesRoutes
             return Results.Ok(hero);
         });
 
-        //Deleta herói
+        //[DELETE]Deleta herói
         app.MapDelete("/heroes/{id}", async (AppDbContext db, int id) =>
         {
             var hero = await db.Heroes.FindAsync(id);
